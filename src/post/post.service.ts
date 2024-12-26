@@ -4,16 +4,30 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { Post } from './entities/post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { User } from '../user/entities/user.entity';
+import { CurrentUser } from '../auth/types/currentuser';
+import { AuthJwtPayload } from '../auth/types/auth.jwtPayload';
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectRepository(Post)
     private postsRepository: Repository<Post>,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
   ) {}
 
-  async create(createPostDto: CreatePostDto) {
-    const newPost = this.postsRepository.create(createPostDto);
+  async create(createPostDto: CreatePostDto, user: any) {
+    const author = await this.usersRepository.findOne({ where: { id: user.id } });
+    if (!author) {
+      throw new NotFoundException(`User with ID ${user.id} not found`);
+    }
+
+    const newPost = this.postsRepository.create({
+      ...createPostDto,
+      userId: author, // Associate the post with the authenticated user
+    });
+
     return await this.postsRepository.save(newPost);
   }
 

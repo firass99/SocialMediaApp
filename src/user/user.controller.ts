@@ -31,23 +31,35 @@ export class UserController {
   @ApiResponse({ status: 200, description: 'The user has been successfully get profile'})
   getProfile(@Req() req) {
     console.log("REQ AFTER PASSING BY UseGuards ID FROM REQUEST*** ",req.user)
-    console.log("REQ AFTER PASSING BY UseGuards ID FROM REQUESTWRONG*** ",req.id)
+    console.log("REQ AFTER PASSING BY UseGuards ID FROM REQUESTWRONG*** ",req.user.id)
 
     return this.userService.findOne(+req.user.id);
   }
 
-  @Patch(':id')
-  @ApiOperation({ summary: 'Update a user' })
-  @ApiResponse({ status: 200, description: 'The user has been successfully updated'})
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  
+  @Get('getById/:id')
+  @ApiOperation({ summary: 'Get user profile' })
+  @ApiResponse({ status: 200, description: 'The user has been successfully get profile'})
+  getById(@Param('id') id: string) {
+
+    return this.userService.findOne(+id);
   }
 
-  @Delete(':id')
+  @Patch()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Update a user' })
+  @ApiResponse({ status: 200, description: 'The user has been successfully updated'})
+  update(@Req() req, @Body() updateUserDto: UpdateUserDto) {
+    return this.userService.update(req.user.id, updateUserDto);
+  }
+
+  @Delete()
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete a user' })
   @ApiResponse({ status: 200, description: 'The user has been successfully delted'})
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  remove(@Req() req) {
+    return this.userService.remove(req.user.id);
   }
+
 }

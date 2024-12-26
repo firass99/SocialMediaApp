@@ -6,15 +6,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
+import { FollowService } from './follow/follow.service';
+import { FollowController } from './follow/follow.controller';
 
 @Module({
   imports:[TypeOrmModule.forFeature([User])],
-  controllers: [UserController],
+  controllers: [UserController,FollowController],
   providers: [    
-
-    UserService, 
-    
+    UserService, FollowService
   ],
-  exports:[UserService]
+  exports:[UserService,FollowService ]
 })
 export class UserModule {}

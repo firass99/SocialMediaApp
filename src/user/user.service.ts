@@ -40,7 +40,7 @@ export class UserService {
 
     const userX = await this.usersRepository.findOne({
       where: { id },
-      select: ['id', 'username', 'role','hashedRefreshToken'],
+      select: ['id', 'username', 'role','email','hashedRefreshToken','posts','comments','likes'],
       relations: ['followers', 'following', 'posts', 'comments', 'likes'],
     }); 
     
